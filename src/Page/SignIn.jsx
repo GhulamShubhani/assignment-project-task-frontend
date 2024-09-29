@@ -91,6 +91,7 @@ export default function SignIn(props) {
       if (res.data.success) {
         dispatch(setUser(res.data.data));
         localStorage.setItem("accessToken", res.data.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.data.refreshToken);
         navigate("/");
       }
     } catch (error) {

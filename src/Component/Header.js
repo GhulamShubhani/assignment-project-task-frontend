@@ -39,6 +39,102 @@ export default function AppAppBar() {
   };
 
   const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+
+
+  // Utility function to decode JWT token
+const decodeJWT = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1])); // Decode payload
+  } catch (e) {
+    return null;
+  }
+};
+
+// Function to check if token is expired
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  
+  const decoded = decodeJWT(token);
+  if (!decoded) return true;
+
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  return decoded.exp < currentTime;
+};
+
+
+
+const refreshAccessToken = async (refreshToken) => {
+  try {
+    const logoutResponse = await axios.post(
+      `${BaseLocalUrl}/user/refreshToken`,
+      {refreshToken},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    console.log(logoutResponse.data,"[[[[[[[[[[[");
+console.log(logoutResponse.data.data.accessToken,"[]]]]]]]]]");
+
+
+    if (logoutResponse.data.data.accessToken) {
+      // Save new access token to localStorage
+      localStorage.setItem('accessToken', logoutResponse.data.data.accessToken);
+      return logoutResponse.data.data.accessToken;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error refreshing access token', error);
+    return null;
+  }
+};
+
+
+  const manageAuthState = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+  
+    if (isTokenExpired(accessToken)) {
+      if (refreshToken) {
+        const newAccessToken = await refreshAccessToken(refreshToken);
+        console.log(newAccessToken,"newAccessToken");
+        
+        if (newAccessToken) {
+          navigate("/");
+        } else {
+          handleLogout();
+        }
+      } else {
+        handleLogout();
+      }
+    } else {
+    }
+  };
+  
+  // // Function to show logout button
+  // const showLogoutButton = () => {
+  //   // Show the logout button
+  //   document.getElementById('logoutButton').style.display = 'block';
+  //   document.getElementById('loginButton').style.display = 'none';
+  // };
+  
+ 
+  
+
+  React.useEffect(() => {
+    if(!refreshToken || refreshToken=='undefined' ){
+    // if(!refreshToken){
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      navigate("/signin");
+    }else{
+      manageAuthState();
+    }
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -53,7 +149,8 @@ export default function AppAppBar() {
         }
       );
       if (logoutResponse.data.success) {
-        localStorage.removeItem("accessToken");
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         navigate("/signin");
       }
     } catch (error) {

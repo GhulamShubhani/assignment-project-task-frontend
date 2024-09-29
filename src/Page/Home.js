@@ -67,8 +67,11 @@ const Home = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalProjects, setTotalProjects] = useState(0);
 
+  const accessToken = localStorage.getItem("accessToken");
+  if(!accessToken){
+    navigate("/signin");
+  }
   const fetchProjects = async (pageNumber = 0, limit = 5) => {
-    const accessToken = localStorage.getItem("accessToken");
     try {
       const response = await axios.get(
         `${BaseLocalUrl}/project?page=${pageNumber + 1}&limit=${limit}`,

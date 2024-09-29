@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Box, CssBaseline } from "@mui/material";
 import Header from "./Header";
+import { useNavigate } from "react-router-dom";
 
 const Layout = ({ children,isName=false,name='' }) => {
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+
+
+
   return (
     <>
       <Helmet>

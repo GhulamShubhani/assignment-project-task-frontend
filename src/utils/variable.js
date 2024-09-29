@@ -9,4 +9,4 @@ export const Colors = {
 
 export const BaseUrl=process.env.BASE_URL || "https://assignment-project-task-backend.onrender.com/api/v1"
 export const BaseLocalUrl=process.env.BASE_LOCAL_URL || "https://assignment-project-task-backend.onrender.com/api/v1"
-// export const BaseLocalUrl=process.env.BASE_LOCAL_URL || "http://localhost:8009/api/v1/"
+// export const BaseLocalUrl=process.env.BASE_LOCAL_URL || "http://localhost:8009/api/v1"
